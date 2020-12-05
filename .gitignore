@@ -1,0 +1,7 @@
+/build
+/.clang
+/.codelite
+/.vscode
+/ByteMe.project
+/ByteMe.workspace
+/postbuild.sh
