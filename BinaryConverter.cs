@@ -34,7 +34,7 @@ namespace ByteMe
         private static extern IntPtr memcpy(void* dst, void* src, UInt64 n);
 
         public static void MemCopy(byte[] destination, int destinationOffset, byte[] source, int sourceOffset, uint length)
-        {
+        {            
             fixed(byte* dest = &destination[destinationOffset])
             {
                 fixed(byte* src = &source[sourceOffset])
