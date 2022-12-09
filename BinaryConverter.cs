@@ -1,8 +1,16 @@
+#define ARCH_64_BIT
+
 using System;
 using System.Runtime.InteropServices;
 
 namespace ByteMe
 {
+#if ARCH_64_BIT
+        using size_t = System.UInt64;
+#else
+        using size_t = System.UInt32;
+#endif
+
     public enum StringEncoding
     {
         Unicode,
@@ -31,7 +39,7 @@ namespace ByteMe
         }
 
         [DllImport("libc", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr memcpy(void* dst, void* src, UInt64 n);
+        private static extern void* memcpy(void* dst, void* src, size_t n);
 
         public static void MemCopy(byte[] destination, int destinationOffset, byte[] source, int sourceOffset, uint length)
         {            
@@ -39,7 +47,7 @@ namespace ByteMe
             {
                 fixed(byte* src = &source[sourceOffset])
                 {
-                    memcpy(dest, src, (UInt64)length);
+                    memcpy(dest, src, (size_t)length);
                 }
             }
         }
@@ -48,13 +56,13 @@ namespace ByteMe
         {
             fixed(byte* dest = &destination[destinationOffset])
             {
-                memcpy(dest, &source[sourceOffset], (UInt64)length);
+                memcpy(dest, &source[sourceOffset], (size_t)length);
             }
         }
 
         public static void MemCopy(byte* destination, int destinationOffset, byte* source, int sourceOffset, uint length)
         {
-            memcpy(&destination[destinationOffset], &source[sourceOffset], (UInt64)length);
+            memcpy(&destination[destinationOffset], &source[sourceOffset], (size_t)length);
         }
 
         public static void GetBytes(long value, byte[] buffer, int offset)
@@ -221,7 +229,7 @@ namespace ByteMe
 
             fixed(byte* src = &bytes[0])
             {
-                memcpy(&buffer[offset], src, (UInt64)bytes.Length);
+                memcpy(&buffer[offset], src, (size_t)bytes.Length);
             }
             
             return bytes.Length;
