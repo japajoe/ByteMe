@@ -339,7 +339,6 @@ namespace ByteMe
             }
             else if(encoding == StringEncoding.Unicode)
             {
-                //Only flip bytes on multi byte characters
                 return unicode.GetString(buffer, offset, length);
             }
             else
