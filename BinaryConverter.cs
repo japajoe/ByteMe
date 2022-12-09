@@ -1,4 +1,4 @@
-#define ARCH_64_BIT
+#define ARCH_64_BIT //Either remove or rename this define if you want to build for a 32 bit platform
 
 using System;
 using System.Runtime.InteropServices;
