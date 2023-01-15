@@ -38,15 +38,21 @@ namespace ByteMe
             }
         }
 
-        [DllImport("libc", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void* memcpy(void* dst, void* src, size_t n);
+        //Apparently libc isn't available everywhere (looking at you Unity -_-)
+        //[DllImport("libc", CallingConvention = CallingConvention.Cdecl)]
+        //private static extern void* memcpy(void* dst, void* src, size_t n);
+
+        private static void memcpy(void* dst, void* src, size_t n)
+        {
+            Buffer.MemoryCopy(src, dst, n, n);
+        }
 
         public static void MemCopy(byte[] destination, int destinationOffset, byte[] source, int sourceOffset, uint length)
         {            
             fixed(byte* dest = &destination[destinationOffset])
             {
                 fixed(byte* src = &source[sourceOffset])
-                {
+                {                    
                     memcpy(dest, src, (size_t)length);
                 }
             }
