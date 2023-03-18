@@ -243,7 +243,7 @@ namespace ByteMe
 
         public static Int64 ToInt64(byte* bytes, int offset)
         {
-            return *(Int64*)bytes[offset];
+            return *(Int64*)&bytes[offset];
         }
 
         public static Int64 ToInt64(byte[] bytes, int offset)
@@ -256,7 +256,7 @@ namespace ByteMe
 
         public static UInt64 ToUInt64(byte* bytes, int offset)
         {
-            return *(UInt64*)bytes[offset];
+            return *(UInt64*)&bytes[offset];
         }
 
         public static UInt64 ToUInt64(byte[] bytes, int offset)
@@ -269,7 +269,7 @@ namespace ByteMe
 
         public static Int32 ToInt32(byte* bytes, int offset)
         {
-            return *(Int32*)bytes[offset];
+            return *(Int32*)&bytes[offset];
         }
 
         public static Int32 ToInt32(byte[] bytes, int offset)
@@ -282,7 +282,7 @@ namespace ByteMe
 
         public static UInt32 ToUInt32(byte* bytes, int offset)
         {
-            return *(UInt32*)bytes[offset];
+            return *(UInt32*)&bytes[offset];
         }
 
         public static UInt32 ToUInt32(byte[] bytes, int offset)
@@ -295,7 +295,7 @@ namespace ByteMe
 
         public static Int16 ToInt16(byte* bytes, int offset)
         {
-            return *(Int16*)bytes[offset];
+            return *(Int16*)&bytes[offset];
         }
 
         public static Int16 ToInt16(byte[] bytes, int offset)
@@ -308,7 +308,7 @@ namespace ByteMe
 
         public static UInt16 ToUInt16(byte* bytes, int offset)
         {
-            return *(UInt16*)bytes[offset];
+            return *(UInt16*)&bytes[offset];
         }
 
         public static UInt16 ToUInt16(byte[] bytes, int offset)
@@ -321,7 +321,7 @@ namespace ByteMe
 
         public static float ToSingle(byte* bytes, int offset)
         {
-            return *(float*)bytes[offset];
+            return *(float*)&bytes[offset];
         }
 
         public static float ToSingle(byte[] bytes, int offset)
@@ -334,7 +334,7 @@ namespace ByteMe
 
         public static double ToDouble(byte* bytes, int offset)
         {
-            return *(double*)bytes[offset];
+            return *(double*)&bytes[offset];
         }
 
         public static double ToDouble(byte[] bytes, int offset)
