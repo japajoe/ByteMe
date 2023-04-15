@@ -2,11 +2,20 @@ using System;
 
 namespace ByteMe
 {
+    public enum WriteSizeType
+    {
+        OneByte = 1,
+        TwoBytes = 2,
+        FourBytes = 4
+    }
+
     /// <summary>
     /// Utility class to read/write values from/to a byte array.
     /// </summary>
     public sealed class BinaryStream
     {
+        
+
         private byte[] buffer;
         private int readOffset;
         private int writeOffset;
@@ -192,19 +201,22 @@ namespace ByteMe
             AdvanceWriteOffset(sizeof(float));
         }
 
-        /// <summary>
-        /// Writes an array of bytes into the buffer.
-        /// </summary>
-        /// <param name="value">The target array.</param>
-        /// <param name="length">The number of bytes to write.</param>
-        /// <param name="writeLength">If true then the first 4 bytes written describe the length of the data.</param>
-        public void Write(byte[] value, int length, bool writeLength = true)
+        public void Write(byte[] value, int length, bool writeLength = true, WriteSizeType writeSizeType = WriteSizeType.FourBytes)
         {
             if(writeLength)
             {
                 int bufferLength = length;
-                BinaryConverter.GetBytes(bufferLength, buffer, writeOffset);
-                System.Buffer.BlockCopy(value, 0, buffer, writeOffset + 2, bufferLength);                
+
+                if(writeSizeType == WriteSizeType.OneByte)
+                    BinaryConverter.GetBytes((byte)bufferLength, buffer, writeOffset);
+                else if(writeSizeType == WriteSizeType.TwoBytes)
+                    BinaryConverter.GetBytes((ushort)bufferLength, buffer, writeOffset);
+                else
+                    BinaryConverter.GetBytes((uint)bufferLength, buffer, writeOffset);
+                
+                System.Buffer.BlockCopy(value, 0, buffer, writeOffset + (int)writeSizeType, bufferLength);
+                
+                
                 AdvanceWriteOffset(sizeof(int));
                 AdvanceWriteOffset(bufferLength);
             }
@@ -215,18 +227,21 @@ namespace ByteMe
             }            
         }
 
-        /// <summary>
-        /// Writes a string into the buffer.
-        /// </summary>
-        /// <param name="value">The target string.</param>
-        /// <param name="writeLength">If true then the first 4 bytes written describe the length of the string.</param>
-        public void Write(string value, bool writeLength = true)
+        public void Write(string value, bool writeLength = true, WriteSizeType writeSizeType = WriteSizeType.FourBytes)
         {
             if(writeLength)
             {
-                int stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset + sizeof(int));
+                int stringLength = 0;
+
+                if(writeSizeType == WriteSizeType.OneByte)
+                    stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset + sizeof(byte));
+                else if(writeSizeType == WriteSizeType.TwoBytes)
+                    stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset + sizeof(ushort));
+                else
+                    stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset + sizeof(uint));
+                
                 BinaryConverter.GetBytes(stringLength, buffer, writeOffset);
-                AdvanceWriteOffset(sizeof(int));
+                AdvanceWriteOffset((int)writeSizeType);
                 AdvanceWriteOffset(stringLength);
             }
             else
@@ -236,20 +251,21 @@ namespace ByteMe
             }
         }
 
-        /// <summary>
-        /// Writes a string into the buffer.
-        /// </summary>
-        /// <param name="value">The target string.</param>
-        /// <param name="offset">The offset within the string of where to start.</param>
-        /// <param name="length">The number of characters to write.</param>
-        /// <param name="writeLength">If true then the first 4 bytes written describe the length of the string.</param>
-        public void Write(string value, int offset, int length, bool writeLength = true)
+        public void Write(string value, int offset, int length, bool writeLength = true, WriteSizeType writeSizeType = WriteSizeType.FourBytes)
         {
             if(writeLength)
             {
-                int numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset + sizeof(int));
+                int numBytesWritten = 0;
+                
+                if(writeSizeType == WriteSizeType.OneByte)
+                    numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset + sizeof(byte));
+                else if(writeSizeType == WriteSizeType.TwoBytes)
+                    numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset + sizeof(ushort));
+                else
+                    numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset + sizeof(uint));                
+                
                 BinaryConverter.GetBytes(numBytesWritten, buffer, writeOffset);
-                AdvanceWriteOffset(sizeof(int));
+                AdvanceWriteOffset((int)writeSizeType);
                 AdvanceWriteOffset(numBytesWritten);
             }
             else
@@ -257,7 +273,7 @@ namespace ByteMe
                 int numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset);
                 AdvanceWriteOffset(numBytesWritten);
             }
-        }       
+        }      
 
         public Int64 ReadInt64()
         {
