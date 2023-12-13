@@ -5,4 +5,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="examples/**" />
+    <Compile Remove="examples/**" />
+    <EmbeddedResource Remove="examples/**" />
+    <None Remove="examples/**" />
+  </ItemGroup>
+
 </Project>
