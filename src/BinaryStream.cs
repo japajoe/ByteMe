@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 
 namespace ByteMe
 {
@@ -12,7 +11,7 @@ namespace ByteMe
         private int readOffset;
         private int writeOffset;
         private int length = 0;
-        private Encoding encoding;
+        private TextEncoding encoding;
 
         /// <summary>
         /// The buffer where data is read from and/or written to.
@@ -78,22 +77,7 @@ namespace ByteMe
         public BinaryStream(byte[] buffer, int length = 0, TextEncoding encoding = TextEncoding.UTF8)
         {
             SetBuffer(buffer, length);
-
-            switch(encoding)
-            {
-                case TextEncoding.UTF8:
-                    this.encoding = new System.Text.UTF8Encoding();
-                    break;
-                case TextEncoding.UTF32:
-                    this.encoding = new System.Text.UTF32Encoding();
-                    break;
-                case TextEncoding.Unicode:
-                    this.encoding = new System.Text.UnicodeEncoding();
-                    break;
-                case TextEncoding.ASCII:
-                    this.encoding = new System.Text.ASCIIEncoding();
-                    break;
-            }
+            this.encoding = encoding;
         }        
 
         /// <summary>
@@ -213,19 +197,19 @@ namespace ByteMe
 
         public void Write(string value)
         {
-            int numBytes = encoding.GetBytes(value, 0, value.Length, buffer, writeOffset);
+            int numBytes = BinaryConverter.GetBytes(value, 0, value.Length, buffer, writeOffset, encoding);
             AdvanceWriteOffset(numBytes);
         }
 
         public void Write(string value, int charCount)
         {
-            int numBytes = encoding.GetBytes(value, 0, charCount, buffer, writeOffset);
+            int numBytes = BinaryConverter.GetBytes(value, 0, charCount, buffer, writeOffset, encoding);
             AdvanceWriteOffset(numBytes);
         }
 
         public void Write(string value, int charIndex, int charCount)
         {
-            int numBytes = encoding.GetBytes(value, charIndex, charCount, buffer, writeOffset);
+            int numBytes = BinaryConverter.GetBytes(value, charIndex, charCount, buffer, writeOffset, encoding);
             AdvanceWriteOffset(numBytes);
         }  
 
@@ -307,7 +291,7 @@ namespace ByteMe
 
         public string ReadString(int length)
         {
-            string value = encoding.GetString(buffer, readOffset, length);
+            string value = BinaryConverter.ToString(buffer, readOffset, length, encoding);
             AdvanceReadOffset(length);
             return value;
         }        
