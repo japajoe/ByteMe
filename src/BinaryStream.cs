@@ -1,25 +1,18 @@
 using System;
+using System.Text;
 
 namespace ByteMe
 {
-    public enum WriteSizeType
-    {
-        OneByte = 1,
-        TwoBytes = 2,
-        FourBytes = 4
-    }
-
     /// <summary>
     /// Utility class to read/write values from/to a byte array.
     /// </summary>
     public sealed class BinaryStream
     {
-        
-
         private byte[] buffer;
         private int readOffset;
         private int writeOffset;
         private int length = 0;
+        private Encoding encoding;
 
         /// <summary>
         /// The buffer where data is read from and/or written to.
@@ -81,9 +74,26 @@ namespace ByteMe
         /// </summary>
         /// <param name="buffer">The target byte array. This can not be null.</param>
         /// <param name="length">The number of actual bytes in the buffer. This is useful if the buffer already has data inside of it.</param>
-        public BinaryStream(byte[] buffer, int length = 0)
+        /// <param name="encoding">The type of encoding to use for reading/writing strings.</param>
+        public BinaryStream(byte[] buffer, int length = 0, TextEncoding encoding = TextEncoding.UTF8)
         {
             SetBuffer(buffer, length);
+
+            switch(encoding)
+            {
+                case TextEncoding.UTF8:
+                    this.encoding = new System.Text.UTF8Encoding();
+                    break;
+                case TextEncoding.UTF32:
+                    this.encoding = new System.Text.UTF32Encoding();
+                    break;
+                case TextEncoding.Unicode:
+                    this.encoding = new System.Text.UnicodeEncoding();
+                    break;
+                case TextEncoding.ASCII:
+                    this.encoding = new System.Text.ASCIIEncoding();
+                    break;
+            }
         }        
 
         /// <summary>
@@ -201,118 +211,62 @@ namespace ByteMe
             AdvanceWriteOffset(sizeof(float));
         }
 
-        public void Write(byte[] value, int length, bool writeLength = true, WriteSizeType writeSizeType = WriteSizeType.FourBytes)
+        public void Write(string value)
         {
-            if(writeLength)
-            {
-                int bufferLength = length;
-
-                if(writeSizeType == WriteSizeType.OneByte)
-                    BinaryConverter.GetBytes((byte)bufferLength, buffer, writeOffset);
-                else if(writeSizeType == WriteSizeType.TwoBytes)
-                    BinaryConverter.GetBytes((ushort)bufferLength, buffer, writeOffset);
-                else
-                    BinaryConverter.GetBytes((uint)bufferLength, buffer, writeOffset);
-                
-                System.Buffer.BlockCopy(value, 0, buffer, writeOffset + (int)writeSizeType, bufferLength);
-                
-                
-                AdvanceWriteOffset(sizeof(int));
-                AdvanceWriteOffset(bufferLength);
-            }
-            else
-            {
-                System.Buffer.BlockCopy(value, 0, buffer, writeOffset, length);
-                AdvanceWriteOffset(length);
-            }            
+            int numBytes = encoding.GetBytes(value, 0, value.Length, buffer, writeOffset);
+            AdvanceWriteOffset(numBytes);
         }
 
-        public void Write(string value, bool writeLength = true, WriteSizeType writeSizeType = WriteSizeType.FourBytes)
+        public void Write(string value, int charCount)
         {
-            if(writeLength)
-            {
-                int stringLength = 0;
-
-                if(writeSizeType == WriteSizeType.OneByte)
-                    stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset + sizeof(byte));
-                else if(writeSizeType == WriteSizeType.TwoBytes)
-                    stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset + sizeof(ushort));
-                else
-                    stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset + sizeof(uint));
-                
-                BinaryConverter.GetBytes(stringLength, buffer, writeOffset);
-                AdvanceWriteOffset((int)writeSizeType);
-                AdvanceWriteOffset(stringLength);
-            }
-            else
-            {
-                int stringLength = BinaryConverter.GetBytes(value, buffer, writeOffset);
-                AdvanceWriteOffset(stringLength);
-            }
+            int numBytes = encoding.GetBytes(value, 0, charCount, buffer, writeOffset);
+            AdvanceWriteOffset(numBytes);
         }
 
-        public void Write(string value, int offset, int length, bool writeLength = true, WriteSizeType writeSizeType = WriteSizeType.FourBytes)
+        public void Write(string value, int charIndex, int charCount)
         {
-            if(writeLength)
-            {
-                int numBytesWritten = 0;
-                
-                if(writeSizeType == WriteSizeType.OneByte)
-                    numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset + sizeof(byte));
-                else if(writeSizeType == WriteSizeType.TwoBytes)
-                    numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset + sizeof(ushort));
-                else
-                    numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset + sizeof(uint));                
-                
-                BinaryConverter.GetBytes(numBytesWritten, buffer, writeOffset);
-                AdvanceWriteOffset((int)writeSizeType);
-                AdvanceWriteOffset(numBytesWritten);
-            }
-            else
-            {
-                int numBytesWritten = BinaryConverter.GetBytes(value, offset, length, buffer, writeOffset);
-                AdvanceWriteOffset(numBytesWritten);
-            }
-        }      
+            int numBytes = encoding.GetBytes(value, charIndex, charCount, buffer, writeOffset);
+            AdvanceWriteOffset(numBytes);
+        }  
 
         public Int64 ReadInt64()
         {
-            Int64 value = BitConverter.ToInt64(buffer, readOffset);
+            Int64 value = BinaryConverter.ToInt64(buffer, readOffset);
             AdvanceReadOffset(sizeof(Int64));
             return value;            
         }
 
         public UInt64 ReadUInt64()
         {
-            UInt64 value = BitConverter.ToUInt64(buffer, readOffset);
+            UInt64 value = BinaryConverter.ToUInt64(buffer, readOffset);
             AdvanceReadOffset(sizeof(UInt64));
             return value;            
         }
 
         public Int32 ReadInt32()
         {
-            Int32 value = BitConverter.ToInt32(buffer, readOffset);
+            Int32 value = BinaryConverter.ToInt32(buffer, readOffset);
             AdvanceReadOffset(sizeof(Int32));
             return value;            
         }
 
         public UInt32 ReadUInt32()
         {
-            UInt32 value = BitConverter.ToUInt32(buffer, readOffset);
+            UInt32 value = BinaryConverter.ToUInt32(buffer, readOffset);
             AdvanceReadOffset(sizeof(UInt32));
             return value;            
         }
 
         public Int16 ReadInt16()
         {
-            Int16 value = BitConverter.ToInt16(buffer, readOffset);
+            Int16 value = BinaryConverter.ToInt16(buffer, readOffset);
             AdvanceReadOffset(sizeof(Int16));
             return value;            
         }
 
         public UInt16 ReadUInt16()
         {
-            UInt16 value = BitConverter.ToUInt16(buffer, readOffset);
+            UInt16 value = BinaryConverter.ToUInt16(buffer, readOffset);
             AdvanceReadOffset(sizeof(UInt16));
             return value;            
         }
@@ -333,14 +287,14 @@ namespace ByteMe
 
         public double ReadDouble()
         {
-            double value = BitConverter.ToDouble(buffer, readOffset);
+            double value = BinaryConverter.ToDouble(buffer, readOffset);
             AdvanceReadOffset(sizeof(double));
             return value;
         }
 
         public float ReadFloat()
         {
-            float value = BitConverter.ToSingle(buffer, readOffset);
+            float value = BinaryConverter.ToSingle(buffer, readOffset);
             AdvanceReadOffset(sizeof(float));
             return value;
         }
@@ -353,7 +307,7 @@ namespace ByteMe
 
         public string ReadString(int length)
         {
-            string value = BinaryConverter.ToString(this.buffer, readOffset, length, StringEncoding.UTF8);
+            string value = encoding.GetString(buffer, readOffset, length);
             AdvanceReadOffset(length);
             return value;
         }        
