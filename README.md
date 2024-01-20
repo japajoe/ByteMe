@@ -3,7 +3,7 @@ C# library for converting from/to binary
 
 # Installation
 ```
-dotnet add package JAJ.Packages.ByteMe --version 1.0.0
+dotnet add package JAJ.Packages.ByteMe --version 1.1.0
 ```
 
 # Why?
