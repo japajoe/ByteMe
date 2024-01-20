@@ -1,29 +1,10 @@
-#define ARCH_64_BIT //Either remove or rename this define if you want to build for a 32 bit platform
+using System;
 
 namespace ByteMe
 {
-    using System;
-    using System.Text;
-#if ARCH_64_BIT
-    using size_t = System.UInt64;
-#else
-        using size_t = System.UInt32;
-#endif
-
-    public enum TextEncoding
-    {
-        UTF8,
-        UTF32,
-        Unicode,
-        ASCII
-    }
-
     public static unsafe class BinaryConverter
     {
-        private static UTF8Encoding utf8 = new UTF8Encoding();
-        private static UTF32Encoding utf32 = new UTF32Encoding();
-        private static UnicodeEncoding unicode = new UnicodeEncoding();
-        private static ASCIIEncoding ascii = new ASCIIEncoding();
+        private static TextEncoder encoder = new TextEncoder();
 
         public static bool IsLittleEndian
         {
@@ -35,7 +16,7 @@ namespace ByteMe
             }
         }
 
-        private static void memcpy(void* dst, void* src, size_t n)
+        private static void memcpy(void* dst, void* src, ulong n)
         {
             Buffer.MemoryCopy(src, dst, n, n);
         }
@@ -44,7 +25,7 @@ namespace ByteMe
         {
             fixed(byte* dest = &destination[destinationOffset])
             {
-                memcpy(dest, &source[sourceOffset], (size_t)length);
+                memcpy(dest, &source[sourceOffset], (ulong)length);
             }
         }
 
@@ -98,27 +79,7 @@ namespace ByteMe
 
         public static int GetBytes(string value, int charIndex, int charCount, byte[] buffer, int offset, TextEncoding encoding)
         {
-            int numBytes = 0;
-
-            switch(encoding)
-            {
-                case TextEncoding.UTF8:
-                    numBytes = utf8.GetBytes(value, charIndex, charCount, buffer, offset);
-                    break;
-                case TextEncoding.UTF32:
-                    numBytes = utf32.GetBytes(value, charIndex, charCount, buffer, offset);
-                    break;
-                case TextEncoding.Unicode:
-                    numBytes = unicode.GetBytes(value, charIndex, charCount, buffer, offset);
-                    break;
-                case TextEncoding.ASCII:
-                    numBytes = ascii.GetBytes(value, charIndex, charCount, buffer, offset);
-                    break;
-                default:
-                    return 0;
-            }
-
-            return numBytes;            
+            return encoder.GetBytes(value, charIndex, charCount, buffer, offset, encoding);
         }
 
         public static int GetBytes(string value, int charCount, byte[] buffer, int offset, TextEncoding encoding)
@@ -197,19 +158,7 @@ namespace ByteMe
 
         public static string ToString(byte[] buffer, int offset, int length, TextEncoding encoding)
         {
-            switch(encoding)
-            {
-                case TextEncoding.UTF8:
-                    return utf8.GetString(buffer, offset, length);
-                case TextEncoding.UTF32:
-                    return utf32.GetString(buffer, offset, length);
-                case TextEncoding.Unicode:
-                    return unicode.GetString(buffer, offset, length);
-                case TextEncoding.ASCII:
-                    return ascii.GetString(buffer, offset, length);
-                default:
-                    return string.Empty;
-            }
+            return encoder.ToString(buffer, offset, length, encoding);
         }
 
         public static void FlipBytes(byte[] bytes, int offset, int length)
@@ -242,32 +191,7 @@ namespace ByteMe
 
         public static int GetByteCount(string value, int charIndex, int charCount, TextEncoding encoding)
         {
-            int numBytes = 0;
-
-            fixed(char *ptr = value)
-            {
-                char *chars = &ptr[charIndex];
-
-                switch(encoding)
-                {
-                    case TextEncoding.UTF8:
-                        numBytes = utf8.GetByteCount(chars, charCount);
-                        break;
-                    case TextEncoding.UTF32:
-                        numBytes = utf32.GetByteCount(chars, charCount);
-                        break;
-                    case TextEncoding.Unicode:
-                        numBytes = unicode.GetByteCount(chars, charCount);
-                        break;
-                    case TextEncoding.ASCII:
-                        numBytes = ascii.GetByteCount(chars, charCount);
-                        break;
-                    default:
-                        return 0;
-                }
-            }
-
-            return numBytes;    
+            return encoder.GetByteCount(value, charIndex, charCount, encoding);
         }
     }
 }
