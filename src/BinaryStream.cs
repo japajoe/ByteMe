@@ -1,3 +1,25 @@
+// MIT License
+
+// Copyright (c) 2025 W.M.R Jap-A-Joe
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 using System;
 
 namespace ByteMe
@@ -135,39 +157,39 @@ namespace ByteMe
             readOffset += size;
         }
 
-        public void Write(Int64 value)
+        public void Write(Int64 value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(Int64));
         }
 
-        public void Write(UInt64 value)
+        public void Write(UInt64 value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(UInt64));
         }         
 
-        public void Write(Int32 value)
+        public void Write(Int32 value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(Int32));
         }
 
-        public void Write(UInt32 value)
+        public void Write(UInt32 value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(UInt32));
         }
 
-        public void Write(Int16 value)
+        public void Write(Int16 value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(Int16));
         }
 
-        public void Write(UInt16 value)
+        public void Write(UInt16 value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(UInt16));
         }
 
@@ -183,15 +205,15 @@ namespace ByteMe
             AdvanceWriteOffset(sizeof(byte));
         }
 
-        public void Write(double value)
+        public void Write(double value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(double));
         }        
 
-        public void Write(float value)
+        public void Write(float value, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BinaryConverter.GetBytes(value, buffer, writeOffset);
+            BinaryConverter.GetBytes(value, buffer, writeOffset, byteOrder);
             AdvanceWriteOffset(sizeof(float));
         }
 
@@ -213,44 +235,44 @@ namespace ByteMe
             AdvanceWriteOffset(numBytes);
         }  
 
-        public Int64 ReadInt64()
+        public Int64 ReadInt64(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            Int64 value = BinaryConverter.ToInt64(buffer, readOffset);
+            Int64 value = BinaryConverter.ToInt64(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(Int64));
             return value;            
         }
 
-        public UInt64 ReadUInt64()
+        public UInt64 ReadUInt64(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            UInt64 value = BinaryConverter.ToUInt64(buffer, readOffset);
+            UInt64 value = BinaryConverter.ToUInt64(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(UInt64));
             return value;            
         }
 
-        public Int32 ReadInt32()
+        public Int32 ReadInt32(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            Int32 value = BinaryConverter.ToInt32(buffer, readOffset);
+            Int32 value = BinaryConverter.ToInt32(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(Int32));
             return value;            
         }
 
-        public UInt32 ReadUInt32()
+        public UInt32 ReadUInt32(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            UInt32 value = BinaryConverter.ToUInt32(buffer, readOffset);
+            UInt32 value = BinaryConverter.ToUInt32(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(UInt32));
             return value;            
         }
 
-        public Int16 ReadInt16()
+        public Int16 ReadInt16(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            Int16 value = BinaryConverter.ToInt16(buffer, readOffset);
+            Int16 value = BinaryConverter.ToInt16(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(Int16));
             return value;            
         }
 
-        public UInt16 ReadUInt16()
+        public UInt16 ReadUInt16(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            UInt16 value = BinaryConverter.ToUInt16(buffer, readOffset);
+            UInt16 value = BinaryConverter.ToUInt16(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(UInt16));
             return value;            
         }
@@ -269,16 +291,16 @@ namespace ByteMe
             return value;
         }
 
-        public double ReadDouble()
+        public double ReadDouble(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            double value = BinaryConverter.ToDouble(buffer, readOffset);
+            double value = BinaryConverter.ToDouble(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(double));
             return value;
         }
 
-        public float ReadFloat()
+        public float ReadFloat(ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            float value = BinaryConverter.ToSingle(buffer, readOffset);
+            float value = BinaryConverter.ToSingle(buffer, readOffset, byteOrder);
             AdvanceReadOffset(sizeof(float));
             return value;
         }
